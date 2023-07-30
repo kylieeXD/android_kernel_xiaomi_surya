@@ -76,7 +76,7 @@ jobs:
 
       - name: Create Git tag
         run: |
-          git tag -a "$TAG" -m "imysm tirr"
+          git tag -a "$TAG" -m "ilysm tirr"
           git push origin "$TAG"
 
       - name: Upload artifacts to release
