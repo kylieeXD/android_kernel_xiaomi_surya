@@ -13,6 +13,7 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/slab.h>
+#include <linux/workarounds.h>
 
 #include "cam_common_util.h"
 #include "cam_debug_util.h"
@@ -68,12 +69,14 @@ uint64_t cam_common_util_get_time_diff(struct timeval *t1, struct timeval *t2)
 void cam_common_util_get_curr_timestamp(struct timeval *time_stamp)
 {
 	struct timespec ts;
-
-#ifdef CONFIG_CAMERA_BOOTCLOCK_TIMESTAMP
- 	ktime_get_ts(&ts);
-#else
-	get_monotonic_boottime(&ts);
-#endif
+	if (is_legacy_timestamp())
+		get_monotonic_boottime(&ts);
+	else
+	#ifdef CONFIG_CAMERA_BOOTCLOCK_TIMESTAMP
+		ktime_get_ts(&ts);
+	#else
+		get_monotonic_boottime(&ts);
+	#endif
 	time_stamp->tv_sec    = ts.tv_sec;
 	time_stamp->tv_usec   = ts.tv_nsec/1000;
 }

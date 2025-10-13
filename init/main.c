@@ -136,6 +136,29 @@ static char *initcall_command_line;
 static char *execute_command;
 static char *ramdisk_execute_command;
 
+/* Workarounds */
+static bool legacy_timestamp_source = false;
+
+static int __init set_timestamp_source(char *val)
+{
+	int tmp = legacy_timestamp_source;
+
+	if (get_option(&val, &tmp)) {
+		legacy_timestamp_source = tmp != 0;
+	}
+
+	pr_info("Workaround: legacy_timestamp_source=%s\n",
+			legacy_timestamp_source ? "enabled" : "disabled");
+
+	return 0;
+}
+__setup("legacy_timestamp_source=", set_timestamp_source);
+
+unsigned int is_legacy_timestamp(void)
+{
+	return legacy_timestamp_source;
+}
+
 /*
  * Used to generate warnings if static_key manipulation functions are used
  * before jump_label_init is called.
