@@ -15,12 +15,17 @@ DTB="${KERNEL_PATH}/dtb.img"
 DTBO="${KERNEL_PATH}/dtbo.img"
 
 # Set kernel name
-BUILD_TYPE="BETA"
-DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M%S)"
-KERNEL_NAME="rethinking${BUILD_TYPE}-${DATE}.zip"
+DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M)"
+KERNEL_NAME0="rethinking[T]-${DATE}.zip"
+KERNEL_NAME1="rethinking[R]-${DATE}.zip"
 
 # Clone SukiSU repo
 if [ ! -d "KernelSU" ]; then curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-main; fi
+
+# Create anykernel
+rm -rf anykernel
+git clone https://github.com/kylieeXD/AK3-Surya.git -b T anykernelT
+git clone https://github.com/kylieeXD/AK3-Surya.git -b R anykernelR
 
 function KERNEL_COMPILE() {
 	if [ "$1" == "install" ]; then
@@ -61,25 +66,35 @@ function KERNEL_RESULT() {
 	# Cat Image
 	cat "$GZIP" "$DTB" > "$CAT"
 
-	# Create anykernel
-	rm -rf anykernel
-	git clone https://github.com/kylieeXD/AK3-Surya.git anykernel
-
 	# Copying image
-	cp "$CAT" anykernel/kernels/
-	cp "$DTBO" anykernel/kernels/
+	cp "$CAT" "$1/kernels/"
+	cp "$DTBO" "$1/kernels/"
 
 	# Created zip kernel
-	cd anykernel && zip -r9 "${KERNEL_NAME}" *
+	cd "$1" && zip -r9 "$2" *
 
 	# Upload kernel
-	RESPONSE=$(curl -s -F "file=@${KERNEL_NAME}" "https://store1.gofile.io/contents/uploadfile" \
-	|| curl -s -F "file=@${KERNEL_NAME}" "https://store2.gofile.io/contents/uploadfile")
+	RESPONSE=$(curl -s -F "file=@$2" "https://store1.gofile.io/contents/uploadfile" \
+	|| curl -s -F "file=@$2" "https://store2.gofile.io/contents/uploadfile")
 	DOWNLOAD_LINK=$(echo "$RESPONSE" | grep -oP '"downloadPage":"\K[^"]+')
 	echo -e "\nDownload link: $DOWNLOAD_LINK"
+
+	# Back to kernel root
+	cd -
 }
 
-# Run functions
+# Run functions for T variant
 KERNEL_COMPILE "$1"
-KERNEL_RESULT
+KERNEL_RESULT anykernelT "$KERNEL_NAME0"
+
+# Disable some config
+cp arch/arm64/configs/surya_defconfig arch/arm64/configs/surya_defconfig.bak
+sed -i 's/^CONFIG_CAMERA_BOOTCLOCK_TIMESTAMP=.*/# CONFIG_CAMERA_BOOTCLOCK_TIMESTAMP is not set/' arch/arm64/configs/surya_defconfig
+
+# Run functions for R variant
+KERNEL_COMPILE "$1"
+KERNEL_RESULT anykernelR "$KERNEL_NAME1"
+mv arch/arm64/configs/surya_defconfig.bak arch/arm64/configs/surya_defconfig
+
+# Done bang
 echo -e "Completed in $((SECONDS / 60)) minute(s) and $((SECONDS % 60)) second(s) !\n"
