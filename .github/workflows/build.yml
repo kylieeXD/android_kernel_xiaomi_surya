@@ -67,7 +67,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Cilok-LAB/android_kernel_xiaomi_surya
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/bashantashahi1-cmd/android_kernel_xiaomi_surya
 
       - name: Set DATE and TAG
         run: |
@@ -92,12 +92,12 @@ jobs:
           files: artifact/**
           body: |
             Device Target: POCO X3 NFC (surya)
-            Kernel Source: https://github.com/Cilok-LAB/android_kernel_xiaomi_surya.git
+            Kernel Source: https://github.com/bashantashahi1-cmd/android_kernel_xiaomi_surya.git
             Kernel Version: 4.14.356
             Clang Version: AOSP Clang v21.0.0
 
             ### Changelog:
-            - https://github.com/Cilok-LAB/android_kernel_xiaomi_surya/commits/rethinking
+            - https://github.com/bashantashahi1-cmd/android_kernel_xiaomi_surya/commits/rethinking
 
             ### Notes
             *Flash carefully. Do not interrupt the synchronization.*
