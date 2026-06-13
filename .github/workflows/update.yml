@@ -1,15 +1,35 @@
-- name: Patch KSU-Next and SuSFS
-  run: |
-    # 1. Get KSU-Next
-    curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -
-    
-    # 2. Get SuSFS and apply core patches
-    git clone -b kernel-4.14 https://gitlab.com/simonpunk/susfs4ksu.git temp_susfs
-    cp -rv temp_susfs/kernel_patches/fs/* fs/
-    cp -rv temp_susfs/kernel_patches/include/linux/* include/linux/
-    patch -p1 < temp_susfs/kernel_patches/50_add_susfs_in_kernel-4.14.patch
-    
-    # 3. Patch KSU-Next for SuSFS compatibility
-    cd KernelSU-Next
-    curl -LSs "https://raw.githubusercontent.com/galaxybuild-project/tools/refs/heads/main/Patches/0001_susfs_157_for_ksunext.patch" | patch -p1
-    
+name: Build Kernel Update
+on:
+  push:
+    branches: [ "rethinking" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Kernel Source
+        uses: actions/checkout@v4
+
+      - name: Patch KSU-Next and SuSFS
+        run: |
+          # 1. Get KSU-Next
+          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -
+          
+          # 2. Get SuSFS and apply core patches
+          git clone -b kernel-4.14 https://gitlab.com/simonpunk/susfs4ksu.git temp_susfs
+          cp -rv temp_susfs/kernel_patches/fs/* fs/
+          cp -rv temp_susfs/kernel_patches/include/linux/* include/linux/
+          patch -p1 < temp_susfs/kernel_patches/50_add_susfs_in_kernel-4.14.patch
+          
+          # 3. Patch KSU-Next for SuSFS compatibility
+          cd KernelSU-Next
+          curl -LSs "https://raw.githubusercontent.com/galaxybuild-project/tools/refs/heads/main/Patches/0001_susfs_157_for_ksunext.patch" | patch -p1
+
+      - name: Build Kernel
+        run: |
+          # ADD YOUR KERNEL COMPILATION COMMANDS HERE
+          # For example:
+          # make O=out ARCH=arm64 surya_defconfig
+          # make O=out ARCH=arm64 -j$(nproc --all)
+          echo "Add compile steps"
