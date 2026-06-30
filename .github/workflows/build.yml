@@ -93,7 +93,7 @@ jobs:
           body: |
             Device Target: POCO X3 NFC (surya)
             Kernel Source: https://github.com/Cilok-LAB/android_kernel_xiaomi_surya.git
-            Kernel Version: 4.14.356
+            Kernel Version: 4.14.357
             Clang Version: AOSP Clang v21.0.0
 
             ### Changelog:
@@ -105,10 +105,15 @@ jobs:
             *Android 11-16 support*
 
             ### Flash this module if you using ksu variant:
-            - https://github.com/backslashxx/mountify/releases/tag/192
+            - https://github.com/backslashxx/mountify/releases/tag/203
 
             ### Recommend Manager (Choose one!):
-            - KernelSU-Next: https://t.me/CilokG05/372
-            - xxKernelSU: https://t.me/CilokG05/373
-            - MamboSU: https://t.me/CilokG05/374
-            - Wild KSU: https://t.me/CilokG05/375
+            - Official KernelSU: https://t.me/CilokG05/492
+            - KernelSU-Next: https://t.me/CilokG05/489
+            - xxKernelSU: https://t.me/CilokG05/491
+            - KowSU: https://t.me/CilokG05/493
+            - MamboSU: https://t.me/CilokG05/494
+            - Wild KSU: https://t.me/CilokG05/497
+            - Rsuntk KSU: https://t.me/CilokG05/490
+            - ReSukiSU: https://t.me/CilokG05/495
+            - SukiSU-Ultra: https://t.me/CilokG05/496
