@@ -15,7 +15,7 @@ DTBO="${KERNEL_PATH}/dtbo.img"
 
 # Set date kernel
 if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
-	DATE="$3"
+	DATE="$2"
 else
 	DATE="$(TZ=Asia/Jakarta date +%Y%m%d%H%M)"
 fi
@@ -24,7 +24,7 @@ fi
 DEFCONFIG="arch/arm64/configs/surya_defconfig"
 
 # Set kernel name
-KERNEL_NAME="rethinking-$1-$2-$DATE.zip"
+KERNEL_NAME="rethinking-$1-$DATE.zip"
 
 # Simple sed function
 set_cfg() {
@@ -33,22 +33,13 @@ set_cfg() {
 	else sed -i "s/^$key=.*/# $key is not set/" "$DEFCONFIG"; fi
 }
 
-# Setup Variant
-case "$1" in
-	Tiramisu)
-		set_cfg CONFIG_CAMERA_BOOTCLOCK_TIMESTAMP y ;;
-	SnowCone)
-		set_cfg CONFIG_CAMERA_BOOTCLOCK_TIMESTAMP n ;;
-	*) echo "Unknown variant: $1"; exit 1 ;;
-esac
-
 # Setup Root
-case "$2" in
+case "$1" in
 	KSU)
 		set_cfg CONFIG_KSU y ;;
 	NoKSU)
 		set_cfg CONFIG_KSU n ;;
-	*) echo "Unknown root: $2"; exit 1 ;;
+	*) echo "Unknown root: $1"; exit 1 ;;
 esac
 
 # Kernel Compiler
@@ -89,7 +80,7 @@ function KERNEL_RESULT() {
 
 	# Create anykernel
 	rm -rf anykernel
-	git clone https://github.com/kylieeXD/AK3-Surya.git -b "$1" anykernel
+	git clone https://github.com/kylieeXD/AK3-Surya.git -b staging anykernel
 
 	# Copying image
 	cp "$DTB" "anykernel/kernels/"
@@ -113,7 +104,7 @@ function KERNEL_RESULT() {
 
 # Run all function
 rm -rf compile.log
-KERNEL_RESULT "$1" "$KERNEL_NAME" "$4" | tee compile.log
+KERNEL_RESULT "$1" "$KERNEL_NAME" "$3" | tee compile.log
 
 # Done bang
 echo -e "Completed in $((SECONDS / 60)) minute(s) and $((SECONDS % 60)) second(s) !\n"
